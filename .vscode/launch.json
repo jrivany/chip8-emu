@@ -10,7 +10,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/bin/chip8-emu",
       "args": [],
-      "stopAtEntry": true,
+      "stopAtEntry": false,
       "cwd": "${workspaceFolder}/bin",
       "environment": [],
       "externalConsole": false,
