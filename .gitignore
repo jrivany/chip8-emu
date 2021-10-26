@@ -56,3 +56,13 @@ src/obj
 bin/
 
 compile_flags.txt
+
+.git/
+
+# ROMs... for now
+*.ch8
+*.c8
+*.CH8
+
+# output
+mem.dump

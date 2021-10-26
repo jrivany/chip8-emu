@@ -1,0 +1,14 @@
+{
+  "files.associations": {
+    "*.h": "cpp",
+    "__locale": "c",
+    "algorithm": "c",
+    "map": "c",
+    "memory": "c",
+    "set": "c",
+    "type_traits": "c",
+    "utility": "c",
+    "sstream": "c",
+    "streambuf": "c"
+  }
+}

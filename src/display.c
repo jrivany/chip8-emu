@@ -1,7 +1,4 @@
 #include <SDL.h>
-#include <stdint.h>
-#include <stdbool.h>
-
 #include "display.h"
 
 static SDL_Window *window;
@@ -30,29 +27,17 @@ void dump_pixels(const uint32_t *px) {
   }
 }
 
-void display_loop() {
-  bool is_running = true;
-  SDL_Event event;
+void display_tick() {
   uint32_t screen_pixels[64*32];
 
-  while (is_running) {
-      while (SDL_PollEvent(&event)) {
-          if (event.type == SDL_QUIT) {
-              is_running = false;
-          }
-      }
-      translate_bit_pixels(screen_pixels, pixels);
-      // dump_pixels(screen_pixels);
-      // is_running = false;
-      SDL_UpdateTexture(texture, NULL, screen_pixels, 64 * 4);
-      SDL_RenderCopy(renderer, texture, NULL, NULL);
-      SDL_RenderPresent(renderer);
-      SDL_Delay(16);
-  }
+  translate_bit_pixels(screen_pixels, pixels);
+  SDL_UpdateTexture(texture, NULL, screen_pixels, 64 * 4);
+  SDL_RenderCopy(renderer, texture, NULL, NULL);
+  SDL_RenderPresent(renderer);
+  SDL_Delay(16);
 }
 
 void display_init() {
-  SDL_Init(SDL_INIT_VIDEO);
 
 #define CHECK_RESOURCE(res) \
   if (!res) { \
@@ -72,8 +57,6 @@ void display_init() {
 
   SDL_RenderSetLogicalSize(renderer, 64, 32);
   SDL_RenderSetIntegerScale(renderer, 1);
-
-  display_loop();
 }
 
 void display_quit() {
@@ -94,3 +77,26 @@ void display_quit() {
 
   SDL_Quit();
 }
+
+void display_clear() {
+  memset(pixels, 0, 32 * sizeof(uint64_t));
+}
+
+int display_sprite(const uint8_t x, const uint8_t  y, const uint8_t *loc, const uint8_t count) {
+  int ret = 0;
+  for (uint8_t i = 0; i < count; ++i) {
+    const uint64_t sample = loc[i];
+    uint64_t *row = &pixels[(y + i) % 32];
+    const uint8_t rot = (63 - x) - 8;
+    const uint64_t mask = sample << rot | sample >> (64 - rot);
+    const uint64_t result = mask ^ *row;
+    printf("Display sample: %02llX row %04X, %04X mask: %016llX, row: %016llX\n", sample, x, y + i, mask, *row);
+    if (result != *row) {
+      ret = 1;
+      *row = result;
+    }
+  }
+
+  return ret;
+}
+
