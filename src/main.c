@@ -11,7 +11,9 @@ static void print_usage(const char *program_name) {
   printf("Usage: %s [-d] <romfile>\n", program_name);
 }
 
-const clock_t HZ = CLOCKS_PER_SEC / 60;
+const clock_t DISP_HZ = CLOCKS_PER_SEC / 60;
+const clock_t CPU_HZ = CLOCKS_PER_SEC / 2000;
+
 bool debugger = false;
 
 int main(int argc, char **argv) {
@@ -40,7 +42,15 @@ int main(int argc, char **argv) {
   bool tick = true;
   SDL_Event event;
   clock_t last_draw = 0;
+  clock_t last_tick = 0;
+  clock_t dt;
   while (is_running) {
+      dt = clock() - last_tick;
+      if (dt < CPU_HZ) {
+        // TODO use a better sleep pattern
+        // usleep(10000);
+        continue;
+      }
       while (SDL_PollEvent(&event)) {
           switch (event.type) {
           case SDL_QUIT:
@@ -66,11 +76,12 @@ int main(int argc, char **argv) {
           cpu_mem_dump();
         }
       }
-      if (clock() - last_draw > HZ) {
+      if (clock() - last_draw > DISP_HZ) {
         cpu_timer_tick();
         display_tick();
         last_draw = clock();
       }
+      last_tick = clock();
   }
   return 0;
 }
