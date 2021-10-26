@@ -1,4 +1,5 @@
 #include <SDL.h>
+#include "common.h"
 #include "display.h"
 
 static SDL_Window *window;
@@ -87,10 +88,13 @@ int display_sprite(const uint8_t x, const uint8_t  y, const uint8_t *loc, const 
   for (uint8_t i = 0; i < count; ++i) {
     const uint64_t sample = loc[i];
     uint64_t *row = &pixels[(y + i) % 32];
-    const uint8_t rot = (63 - x) - 8;
+    const uint8_t rot = (63 - x) - 7;
     const uint64_t mask = sample << rot | sample >> (64 - rot);
     const uint64_t result = mask ^ *row;
-    printf("Display sample: %02llX row %04X, %04X mask: %016llX, row: %016llX\n", sample, x, y + i, mask, *row);
+    if (debugger) {
+      printf("Display sample: %02llX row %04X, %04X mask: %016llX, row: %016llX\n",
+              sample, x, y + i, mask, *row);
+    }
     if (result != *row) {
       ret = 1;
       *row = result;

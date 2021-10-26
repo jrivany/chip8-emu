@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "common.h"
 #include "display.h"
 #include "cpu.h"
 #include "input.h"
@@ -70,11 +71,16 @@ void cpu_mem_dump() {
   fclose(fp);
 }
 
+static void crash_dump() {
+  reg_dump();
+  stack_dump();
+  cpu_mem_dump();
+  exit(1);
+}
 static void check_stack() {
   if (SP > 0xF) {
     fprintf(stderr, "Stack overflow\n");
-    cpu_mem_dump();
-    exit(1);
+    crash_dump();
   }
 }
 
@@ -96,12 +102,8 @@ void cpu_load_rom(const uint8_t *prog, const size_t len) {
 bool cpu_tick() {
   if (PC > MEM_SIZE) {
     fprintf(stderr, "PC %X out of bounds!", PC);
-    cpu_mem_dump();
-    return false;
+    crash_dump();
   }
-
-  // if (PC == 0x450)
-  //   return false;
 
   if (key_dest) {
     int8_t next = key_next();
@@ -121,13 +123,14 @@ bool cpu_tick() {
   const uint8_t n = addr & 0xF;
   const uint8_t kk = addr & 0xFF;
   const uint16_t sum =  V[x] + V[y];
-  #ifdef LOG
-  printf("instruction: %04X leading: %X addr: %03X x: %X y: %X n: %X kk: %02X\n",
-          instruction, leading, addr, x, y, n, kk);
-  #endif
+
   PC += 2;
-  reg_dump();
-  stack_dump();
+  if (debugger) {
+    printf("instruction: %04X leading: %X addr: %03X x: %X y: %X n: %X kk: %02X\n",
+        instruction, leading, addr, x, y, n, kk);
+    reg_dump();
+    stack_dump();
+  }
   switch (leading) {
     case 0x0:
       switch (instruction) {

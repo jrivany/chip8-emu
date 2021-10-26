@@ -63,6 +63,7 @@ compile_flags.txt
 *.ch8
 *.c8
 *.CH8
+chip8-roms/
 
 # output
 mem.dump

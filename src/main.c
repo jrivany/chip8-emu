@@ -12,6 +12,7 @@ static void print_usage(const char *program_name) {
 }
 
 const clock_t HZ = CLOCKS_PER_SEC / 60;
+bool debugger = false;
 
 int main(int argc, char **argv) {
   uint8_t *rom;
@@ -20,7 +21,6 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  bool debugger = false;
   if (argc == 3) {
     char *opt = argv[1];
     if (opt[0] == '-' && opt[1] == 'd' && opt[2] == '\0'){

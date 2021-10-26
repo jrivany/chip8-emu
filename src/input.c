@@ -3,7 +3,7 @@
 
 static uint16_t key_state;
 // Whether a key was pressed this tick
-static Sint8 next = -1;
+static int8_t next = -1;
 
 static bool map_key(uint8_t *dst, const SDL_KeyCode code) {
   switch (code) {
