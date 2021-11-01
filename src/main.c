@@ -32,6 +32,7 @@ int main(int argc, char **argv) {
       return 1;
     }
   }
+
   char *romfile = (argc == 3) ? argv[2] : argv[1];
   size_t sz = rom_load(romfile, &rom);
   cpu_load_rom(rom, sz);
@@ -51,6 +52,7 @@ int main(int argc, char **argv) {
         // usleep(10000);
         continue;
       }
+
       while (SDL_PollEvent(&event)) {
           switch (event.type) {
           case SDL_QUIT:
